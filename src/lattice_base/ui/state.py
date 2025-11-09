@@ -15,18 +15,22 @@ class TaskState(param.Parameterized):
 
     id = param.String(doc="Task identifier")
     name = param.String(doc="Human-readable task name")
+
     kind = param.ObjectSelector(
         default="task",
         objects=["subproject", "epic", "task", "spike", "milestone"],
         doc="Task type/category",
     )
+
     status = param.ObjectSelector(
         default="todo",
         objects=["todo", "in-progress", "blocked", "done", "planned"],
         doc="Task status/state",
     )
-    depends_on = param.List(class_=str, default=[], doc="List of task IDs this depends on")
-    tags = param.List(class_=str, default=[], doc="Free-form tags")
+
+    # NOTE: use item_type= instead of class_= to avoid ParamFutureWarning
+    depends_on = param.List(item_type=str, default=[], doc="List of task IDs this depends on")
+    tags = param.List(item_type=str, default=[], doc="Free-form tags")
     description = param.String(default="", doc="Optional longer description")
 
 
@@ -40,7 +44,8 @@ class LatticeState(param.Parameterized):
     project_owner = param.String(default="", doc="Owner")
     project_description = param.String(default="", doc="Description")
 
-    tasks = param.List(class_=TaskState, default=[], doc="List of TaskState objects")
+    # list of TaskState objects
+    tasks = param.List(item_type=TaskState, default=[], doc="List of TaskState objects")
 
 
 # ────────────── converters ──────────────
@@ -53,7 +58,6 @@ def lattice_to_state(lat: Lattice) -> LatticeState:
         project_description=lat.project.description or "",
     )
 
-    # Map each Task -> TaskState
     state.tasks = [
         TaskState(
             id=t.id,

@@ -14,8 +14,8 @@ class ProjectInfo(BaseModel):
 class Task(BaseModel):
     id: str
     name: str
-    kind: str = Field(..., regex="^(subproject|epic|task|spike|milestone)$")
-    status: str = Field(..., regex="^(todo|in-progress|blocked|done|planned)$")
+    kind: str = Field(..., pattern="^(subproject|epic|task|spike|milestone)$")
+    status: str = Field(..., pattern="^(todo|in-progress|blocked|done|planned)$")
     depends_on: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
     description: Optional[str] = None

@@ -109,11 +109,11 @@ class LatticeEditor(param.Parameterized):
 
     status_md = param.String(default="", doc="Markdown status / validation messages")
 
-    # Internal, non-param state
+    # Internal state
     _path: Path
     _updating_yaml: bool
 
-    # Panel widgets we keep around
+    # Panel widgets
     table: pn.widgets.Tabulator
     graph_pane: pn.pane.HoloViews
 
@@ -345,3 +345,71 @@ class LatticeEditor(param.Parameterized):
             description="",
         )
         self.lattice_state.tasks.append(new_ts)
+        self.new_id.value = ""
+        self.new_name.value = ""
+
+        self._sync_yaml_from_state()
+        self._set_status(f"✅ Added task `{tid}`.")
+
+    # ────────────── Panel layout ──────────────
+
+    def panel(self):
+        """Return the top-level Panel layout for this editor."""
+        yaml_widget = pn.widgets.TextAreaInput.from_param(
+            self.param.yaml_text, height=400, sizing_mode="stretch_both"
+        )
+        auto_refresh_widget = pn.widgets.Checkbox.from_param(self.param.auto_refresh)
+        refresh_button = pn.widgets.Button(
+            name="Refresh from YAML", button_type="primary"
+        )
+        refresh_button.on_click(lambda _e: self.refresh_from_yaml())
+
+        left = pn.Column(
+            "### Lattice YAML",
+            yaml_widget,
+            pn.Row(refresh_button, auto_refresh_widget),
+            self.status_panel,
+        )
+
+        edit_box = pn.Column(
+            "#### Edit selected task",
+            self.sel_id,
+            self.sel_name,
+            self.kind_select,
+            self.status_select,
+            self.update_task_btn,
+        )
+
+        add_box = pn.Column(
+            "#### Add new task",
+            self.new_id,
+            self.new_name,
+            self.new_kind,
+            self.new_status,
+            self.new_depends_on,
+            self.add_task_btn,
+        )
+
+        right = pn.Column(
+            "### Tasks",
+            self.table,
+            pn.Row(edit_box, add_box),
+            "### Lattice Graph",
+            self.graph_pane,
+        )
+
+        return pn.Row(left, right, sizing_mode="stretch_both")
+
+
+# ─────────────────────────── entrypoint ───────────────────────────
+
+def main():
+    """
+    Entry point used by `lattice-base-lattice-gui`.
+    Starts an in-process Panel server and opens the browser.
+    """
+    editor = LatticeEditor()
+    layout = editor.panel()
+    pn.config.sizing_mode = "stretch_both"
+    pn.serve(layout, title="Lattice Editor", show=True)
+
