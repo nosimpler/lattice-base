@@ -33,6 +33,8 @@ lattice-base-lattice-gui = "lattice_base.lattice.panel_app:main"
 lattice-base-aggregate-gui = "lattice_base.apps.aggregate:main"
 lattice-base-lattice-to-notion = "lattice_base.integrations.notion:cli_push"
 lattice-base-notion-to-lattice = "lattice_base.integrations.notion:cli_pull"
+lattice-base-init = "lattice_base.project.core:cli_main"
+lattice-base-next = "lattice_base.project.core:cli_next_main"
 
 [project.entry-points."lattice_base.apps"]
 # This group is for external plugins; lattice editor is built-in in the aggregate app.
