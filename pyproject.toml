@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lattice-base"
+version = "0.1.0"
+description = "Generic lattice-based project format, editor, and Panel hub"
+authors = [{ name = "Robert Law", email = "nosimpler@gmail.com" }]
+readme = "README.md"
+license = { text = "LGPL > 3.0 (LGPL text included in LICENSE file)" }
+requires-python = ">=3.10"
+dependencies = [
+  "pydantic>=2.5",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+panel = [
+  "panel>=1.4",
+  "holoviews>=1.18",
+  "bokeh>=3.4",
+  "networkx>=3.0",
+  "pandas>=2.0",
+]
+notion = [
+  "notion-client>=2.2.0",
+]
+
+[project.scripts]
+lattice-base-validate = "lattice_base.lattice.cli:main"
+lattice-base-lattice-gui = "lattice_base.lattice.panel_app:main"
+lattice-base-aggregate-gui = "lattice_base.apps.aggregate:main"
+lattice-base-lattice-to-notion = "lattice_base.integrations.notion:cli_push"
+lattice-base-notion-to-lattice = "lattice_base.integrations.notion:cli_pull"
+
+[project.entry-points."lattice_base.apps"]
+# This group is for external plugins; lattice editor is built-in in the aggregate app.
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}

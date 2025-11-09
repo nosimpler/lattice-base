@@ -1,0 +1,33 @@
+version: 0.1
+
+project:
+  id: example
+  name: Example Project
+  owner: example-owner
+  description: >
+    A simple lattice to demonstrate lattice-base.
+
+tasks:
+  - id: core
+    name: Core Library
+    kind: subproject
+    status: in-progress
+    depends_on: []
+    tags: [library]
+    description: Core functionality.
+
+  - id: ui
+    name: UI Integration
+    kind: task
+    status: todo
+    depends_on: [core]
+    tags: [ui]
+    description: Panel or web UI integration.
+
+  - id: docs
+    name: Documentation
+    kind: task
+    status: planned
+    depends_on: [core]
+    tags: [docs]
+    description: User and developer documentation.
