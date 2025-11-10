@@ -1,0 +1,300 @@
+version: 0.1
+project:
+  id: lattice-base
+  name: lattice-base
+  owner: rob
+  description: >
+    Generic lattice representation, CLI tools, and Panel-based UI for
+    organizing projects as dependency graphs (lattices).
+  statuses:
+    - suggested      # idea only, test optional
+    - test-design    # agreed, test still needs to be designed
+    - planned        # test defined and agreed upon
+    - in-progress
+    - done
+    - blocked
+
+tasks:
+  # ───────────────────────── Core model & schema ─────────────────────────
+
+  - id: lb-core-model
+    name: Core lattice schema & validation
+    kind: task
+    status: in-progress
+    priority: high
+    depends_on: []
+    tags: [core, schema, validation]
+    test: >
+      pytest tests/test_model_schema.py::test_basic_lattice_roundtrip
+    description: >
+      Maintain the core Pydantic lattice schema and validation logic, including
+      support for extra fields like priority, status, and test, with YAML
+      roundtrip tests.
+
+  - id: lb-core-status-priority
+    name: Status & priority vocabulary support
+    kind: task
+    status: planned
+    priority: high
+    depends_on: [lb-core-model]
+    tags: [schema, status, priority]
+    test: >
+      pytest tests/test_model_schema.py::test_status_priority_fields
+    description: >
+      Support richer status and priority vocabularies in the Lattice/Task models,
+      including 'suggested', 'test-design', 'planned', 'in-progress', 'done',
+      and 'blocked', while keeping parsing backwards compatible.
+
+  # ───────────────────────── CLI tools ─────────────────────────
+
+  - id: lb-cli-suite
+    name: CLI tooling suite
+    kind: epic
+    status: test-design
+    priority: high
+    depends_on: [lb-core-model]
+    tags: [cli]
+    description: >
+      Collection of command-line tools for initializing, inspecting, and
+      transforming lattices (init, next tasks, test runner, validation, etc.).
+
+  - id: lb-cli-init
+    name: lattice-base-init (project scaffold)
+    kind: task
+    status: in-progress
+    priority: high
+    depends_on: [lb-cli-suite]
+    tags: [cli, init]
+    test: >
+      pytest tests/test_cli_init.py::test_init_creates_project_yaml
+    description: >
+      Initialize a new project.yaml in a repo, prompting for project id, name,
+      owner, and description, and writing a valid lattice file.
+
+  - id: lb-cli-next
+    name: lattice-base-next (ready tasks)
+    kind: task
+    status: in-progress
+    priority: high
+    depends_on: [lb-cli-suite]
+    tags: [cli, scheduling]
+    test: >
+      pytest tests/test_cli_next.py::test_ready_tasks_computation
+    description: >
+      List incomplete tasks that are ready to start (all dependencies done,
+      not blocked), sorted by priority and id.
+
+  - id: lb-cli-test
+    name: lattice-base-test (per-task and project tests)
+    kind: task
+    status: planned
+    priority: high
+    depends_on: [lb-cli-suite, lb-core-status-priority]
+    tags: [cli, tests, automation]
+    test: >
+      pytest tests/test_cli_test.py::test_runs_task_and_project_tests
+    description: >
+      CLI entry point that:
+        - Loads a lattice (project.yaml by default).
+        - Runs 'test' commands for a given task (--task <id>) or for the entire lattice.
+        - Exits non-zero when any test fails.
+        - Optionally outputs a machine-readable report of test results.
+
+  - id: lb-cli-validate
+    name: lattice-base-validate (schema & graph check)
+    kind: task
+    status: test-design
+    priority: medium
+    depends_on: [lb-cli-suite]
+    tags: [cli, validation]
+    test: >
+      echo "TODO: design lattice-base-validate tests"
+    description: >
+      Validate a lattice file, reporting cycles, missing dependencies, unknown
+      statuses, and schema violations, with helpful error output.
+
+  # ───────────────────────── Panel UI / editor ─────────────────────────
+
+  - id: lb-ui-editor
+    name: Panel lattice editor (graph + form + YAML)
+    kind: epic
+    status: in-progress
+    priority: high
+    depends_on: [lb-core-model]
+    tags: [ui, panel]
+    description: >
+      Panel-based editor combining a graph view, single-task form editor, and
+      raw YAML editing, with sync and save-to-disk behavior.
+
+  - id: lb-ui-editor-core
+    name: Core Panel editor wiring
+    kind: task
+    status: in-progress
+    priority: high
+    depends_on: [lb-ui-editor]
+    tags: [ui, panel]
+    test: >
+      pytest tests/test_panel_editor.py::test_editor_loads_and_saves_lattice
+    description: >
+      Ensure the Panel editor can load a lattice file, edit tasks via form
+      controls, sync YAML ↔ graph, and save changes back to disk.
+
+  - id: lb-ui-task-select
+    name: Task selection & editing UX
+    kind: task
+    status: planned
+    priority: medium
+    depends_on: [lb-ui-editor-core]
+    tags: [ui, selection]
+    test: >
+      pytest tests/test_panel_editor.py::test_task_selection_updates_form
+    description: >
+      Provide a robust mechanism for selecting tasks (e.g. dropdown or future
+      node click) and keeping the form in sync with the selected task.
+
+  - id: lb-ui-filters-search
+    name: Filters & search in editor
+    kind: task
+    status: test-design
+    priority: medium
+    depends_on: [lb-ui-editor-core]
+    tags: [ui, search, filters]
+    test: >
+      echo "TODO: design filters/search tests"
+    description: >
+      Add UI controls to filter tasks by status, priority, tags, or text search,
+      and ensure the graph and dropdown respect those filters.
+
+  # ───────────────────────── Aggregate app ─────────────────────────
+
+  - id: lb-aggregate-app
+    name: Aggregate hub (lattice-base-aggregate-gui)
+    kind: epic
+    status: in-progress
+    priority: medium
+    depends_on: [lb-ui-editor]
+    tags: [ui, aggregate]
+    description: >
+      Aggregate Panel app that hosts the lattice editor and future sub-apps,
+      auto-detecting the nearest project.yaml.
+
+  - id: lb-aggregate-project-header
+    name: Project header & auto-detect
+    kind: task
+    status: in-progress
+    priority: medium
+    depends_on: [lb-aggregate-app]
+    tags: [ui, aggregate]
+    test: >
+      pytest tests/test_aggregate_app.py::test_detects_project_yaml
+    description: >
+      Show detected project id, name, and lattice file path in the aggregate
+      app, including helpful hints when no project.yaml is found.
+
+  - id: lb-aggregate-save-button
+    name: Save-to-disk integration in aggregate app
+    kind: task
+    status: planned
+    priority: medium
+    depends_on: [lb-aggregate-app, lb-ui-editor-core]
+    tags: [ui, aggregate]
+    test: >
+      pytest tests/test_aggregate_app.py::test_save_to_disk_updates_file
+    description: >
+      Ensure that saving from within the aggregate app writes changes to the
+      backing lattice file and updates the status banner.
+
+  # ───────────────────────── Tests & semantics ─────────────────────────
+
+  - id: lb-tests-linking
+    name: Link tasks and projects to tests
+    kind: task
+    status: planned
+    priority: high
+    depends_on: [lb-core-status-priority, lb-cli-test]
+    tags: [tests, semantics]
+    test: >
+      pytest tests/test_cli_test.py::test_respects_task_test_field
+    description: >
+      Define and document the convention that tasks and projects may have a
+      'test' field specifying a shell command, and that planned/in-progress/done
+      tasks are expected to have such a test defined.
+
+  - id: lb-tests-gated-completion
+    name: Gated completion based on tests
+    kind: task
+    status: test-design
+    priority: medium
+    depends_on: [lb-tests-linking, lb-ui-editor-core]
+    tags: [ui, tests, semantics]
+    test: >
+      echo "TODO: design gated completion tests"
+    description: >
+      Explore optional modes where tasks cannot be marked 'done' in the UI
+      unless their test passes (or at least emits a clear warning), and surface
+      which tasks/projects are fully test-verified.
+
+  # ───────────────────────── Integrations ─────────────────────────
+
+  - id: lb-integrations
+    name: Integrations & ecosystem
+    kind: epic
+    status: suggested
+    priority: medium
+    depends_on: [lb-core-model]
+    tags: [integrations]
+    description: >
+      Integrations with external tools (Notion, GitHub, etc.) and conventions
+      for linking tasks to external artifacts.
+
+  - id: lb-github-sync
+    name: GitHub synchronization layer
+    kind: task
+    status: suggested
+    priority: medium
+    depends_on: [lb-integrations]
+    tags: [github, sync, automation]
+    test: >
+      echo "TODO: design GitHub sync tests"
+    description: >
+      Implement a basic sync between lattice tasks and GitHub issues (or labels),
+      with a CLI to push/pull status and IDs, and possible GitHub Actions hooks.
+
+  # ───────────────────────── DX / docs ─────────────────────────
+
+  - id: lb-dx-docs
+    name: Documentation & developer experience
+    kind: epic
+    status: in-progress
+    priority: medium
+    depends_on: [lb-core-model]
+    tags: [docs, dx]
+    description: >
+      Documentation, quickstarts, and editor integrations to make lattice-base
+      easy to adopt across projects.
+
+  - id: lb-dx-quickstart-windows
+    name: Windows quickstart & VS Code integration
+    kind: task
+    status: in-progress
+    priority: medium
+    depends_on: [lb-dx-docs]
+    tags: [docs, vscode, windows]
+    test: >
+      pytest tests/test_docs_quickstart.py::test_windows_quickstart_snippet
+    description: >
+      Provide a one-liner Windows bootstrap, VS Code task/launch configs, and
+      clear instructions for running the lattice editor and aggregate hub.
+
+  - id: lb-dx-templates
+    name: Project template library
+    kind: task
+    status: suggested
+    priority: medium
+    depends_on: [lb-dx-docs]
+    tags: [templates, dx]
+    test: >
+      echo "TODO: design template tests"
+    description: >
+      Ship a small library of example project.yaml templates (research, data
+      pipeline, microservice, etc.) that users can start from.
