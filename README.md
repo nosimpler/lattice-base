@@ -234,6 +234,8 @@ The latter will execute all CLI-defined task tests from your `project.yaml` and 
 
 ---
 
-## 📜 License
+For full details of the lattice YAML format, see [docs/spec.md](docs/spec.md).
 
-LGPL-3.0 © 2025 Robert Law <nosimpler@gmail.com>
+---
+
+_LGPL-3.0 © 2025 Robert Law <nosimpler@gmail.com>_
