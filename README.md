@@ -126,16 +126,93 @@ lattice-base-test --complete
 ## 📈 Example: lattice-base project lattice
 
 ```mermaid
+%%{init: {'theme': 'default', 'themeVariables': { 'fontSize': '18px' }, 'flowchart': { 'width':100, wrap': 'true', curve': 'linear', 'nodeSpacing': 100, 'rankSpacing': 120 }}}%%
 graph TD
-  A[lb-core-model] --> B[lb-core-io]
-  B --> C[lb-core-graph]
-  C --> D[lb-core-cli]
-  D --> E[lb-core-validation]
-  E --> F[lb-core-test]
-  F --> G[lb-core-completion]
-  classDef done fill:#a0d8a0,stroke:#333,stroke-width:1px;
-  class A,B done;
+  epic-core["Core lattice model & I/O"]
+  lb-core-model("Pydantic lattice model")
+  lb-core-io("YAML load/save helpers")
+  lb-core-validation("Basic validation semantics")
+  epic-graph["Graph reasoning & analysis"]
+  lb-graph-ready("Ready task computation")
+  lb-graph-toposort("Topological sort <br> & cycle detection")
+  epic-cli["CLI suite"]
+  lb-cli-init("lattice-base-init")
+  lb-cli-next("lattice-base-next")
+  lb-cli-validate("lattice-base-validate")
+  lb-cli-mermaid("lattice-base-mermaid")
+  lb-cli-test("lattice-base-test CLI")
+  epic-dx["Documentation & DX"]
+  lb-dx-readme("Core README & examples")
+  lb-dx-quickstart-windows("Windows quickstart")
+  lb-dx-quickstart-linux("Linux/macOS quickstart")
+  lb-dx-bootstrap-scripts("Bootstrap scripts for user repos")
+  epic-future["Future features & lattice semantics"]
+  lb-completion-enforcement("Distinguished completion <br> node enforcement")
+  lb-code-markers("Code-block markers by task id")
+  lb-bug-localization("Bug localization <br> via task markers")
+  complete-lattice-base-v0((("lattice-base v0 completion")))
+  lb-core-model --> lb-core-io
+  lb-core-model --> lb-core-validation
+  lb-core-io --> lb-core-validation
+  lb-core-model --> lb-graph-ready
+  lb-core-model --> lb-graph-toposort
+  lb-core-model --> lb-cli-init
+  lb-core-io --> lb-cli-init
+  lb-core-model --> lb-cli-next
+  lb-graph-ready --> lb-cli-next
+  lb-core-validation --> lb-cli-validate
+  lb-graph-toposort --> lb-cli-validate
+  lb-core-model --> lb-cli-mermaid
+  lb-graph-ready --> lb-cli-mermaid
+  lb-core-model --> lb-cli-test
+  lb-core-io --> lb-cli-test
+  lb-cli-init --> lb-dx-readme
+  lb-cli-next --> lb-dx-readme
+  lb-cli-validate --> lb-dx-readme
+  lb-cli-mermaid --> lb-dx-readme
+  lb-dx-readme --> lb-dx-quickstart-windows
+  lb-dx-readme --> lb-dx-quickstart-linux
+  lb-dx-readme --> lb-dx-bootstrap-scripts
+  lb-dx-quickstart-windows --> lb-dx-bootstrap-scripts
+  lb-dx-quickstart-linux --> lb-dx-bootstrap-scripts
+  lb-core-model --> lb-completion-enforcement
+  lb-cli-validate --> lb-completion-enforcement
+  lb-core-model --> lb-code-markers
+  lb-code-markers --> lb-bug-localization
+  lb-core-model --> complete-lattice-base-v0
+  lb-core-io --> complete-lattice-base-v0
+  lb-core-validation --> complete-lattice-base-v0
+  lb-graph-ready --> complete-lattice-base-v0
+  lb-graph-toposort --> complete-lattice-base-v0
+  lb-cli-init --> complete-lattice-base-v0
+  lb-cli-next --> complete-lattice-base-v0
+  lb-cli-validate --> complete-lattice-base-v0
+  lb-cli-mermaid --> complete-lattice-base-v0
+  lb-dx-readme --> complete-lattice-base-v0
+
+%% status-based styling (optional, adjust in your docs if desired)
+classDef done fill:#bbf,stroke:#000;
+classDef inprogress fill:#ffd,stroke:#000;
+classDef planned fill:#dfd,stroke:#000;
+classDef blocked fill:#fbb,stroke:#000;
+class lb-core-model done;
+class lb-core-io done;
+class lb-core-validation done;
+class lb-graph-ready done;
+class lb-graph-toposort done;
+class lb-cli-init done;
+class lb-cli-next done;
+class lb-cli-validate done;
+class lb-cli-mermaid done;
+class lb-cli-test done;
+class lb-dx-readme done;
+class lb-dx-quickstart-windows done;
+class lb-dx-quickstart-linux done;
+class lb-dx-bootstrap-scripts done;
+class complete-lattice-base-v0 done;
 ```
+
+
 
 You can generate this diagram automatically for your project:
 ```bash
