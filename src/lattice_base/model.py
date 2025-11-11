@@ -40,15 +40,6 @@ class Task(BaseModel):
     # Arbitrary extra fields are allowed and preserved
     extra: Dict[str, Any] = Field(default_factory=dict)
 
-    @field_validator("status")
-    @classmethod
-    def check_status_for_kind(cls, v: Optional[Status], values: Dict[str, Any]) -> Optional[Status]:
-        kind: Kind = values.get("kind", "task")
-        if kind in ("epic", "subproject") and v is not None:
-            # We don't forbid it, but you can decide to warn in validate()
-            return v
-        return v
-
     @field_validator("test")
     @classmethod
     def normalize_test(cls, v: Optional[str]) -> Optional[str]:
