@@ -29,7 +29,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 pip install --upgrade pip
-pip install "lattice-base @ git+https://github.com/your-user/lattice-base.git"
+pip install "lattice-base @ git+https://github.com/nosimpler/lattice-base.git"
 
 # Initialize, validate, and test
 lattice-base-init --repo . --id myproj --name "My Project"
@@ -47,7 +47,7 @@ py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
 pip install --upgrade pip
-pip install "lattice-base @ git+https://github.com/your-user/lattice-base.git"
+pip install "lattice-base @ git+https://github.com/nosimpler/lattice-base.git"
 
 # Initialize, validate, and test
 lattice-base-init --repo . --id myproj --name "My Project"
